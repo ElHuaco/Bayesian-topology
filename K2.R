@@ -103,7 +103,7 @@ k2 <- function(order, u, D){
             }
         }
 
-        #print(paste('Parents of Node ', i, ' : Node =', parents[[i]]))
+        print(paste('Parents of Node ', i, ' : Node =', parents[[i]]))
     }
 
     
