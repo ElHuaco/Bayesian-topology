@@ -2,6 +2,7 @@
 R implementation of the K2 algorithm for learning the topology of Bayesian belief networks.
 
 ## TODO:
+<<<<<<< HEAD
 1. Fix add parent possibilities one by one:
 	In a network of 4 nodes we want to check respectively
 	- none for 1st
