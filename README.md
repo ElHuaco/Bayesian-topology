@@ -1,14 +1,16 @@
 # Bayesian-topology
 R implementation of the K2 algorithm for learning the topology of Bayesian belief networks.
 
-
-K2 takes three arguments:
-1. First, the order of the nodes. That means the first one is the predicted parent and every node after tries the ones before as parents.
-2. The second argument is the upper maximum number of parents that are possbible but that does not mean that there have to be this number of parents.
-3. The third is the Dataframe. Which has the rows as cases and the coloumns as nodes.
-
-For plotting call 'plot_graph(parent)' and the inpute is the list of parents youreceive from K2.
-
 ## TODO:
-- Test performance of our R implementation (accuracy?).
-- Implement with ``bnstruct`` package, plot the graph and test the accuracy as well.
+1. Fix add parent possibilities one by one:
+	In a network of 4 nodes we want to check respectively
+	- none for 1st
+	- none, 1 for 2nd
+	- none, 1, 2, (1,2) for 3rd
+	- none, 1, 2, (1,2), 3, (1,3), (2,3), (1,2,3) for 4th
+2. Add return of relative probability for a structure, test best structure with
+random order of the nodes.
+3. Compare computation time of normal implementation with implementation of log
+probability which turns products into sums.
+4. Implement the same with ``bnstruct`` and compare relative probabilities found,
+as well as computation time.
