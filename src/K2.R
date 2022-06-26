@@ -98,7 +98,7 @@ k2 <- function(order, u, D, print_result = TRUE){
 	#  add relative probability of that structure as a return value in that case
     N <- length(D)
     parents <- rep(list(0), N)
-	# 2TODO: add one by one instead of checking every single permutation
+	relat_prob <- 1.0
     for(i in 2:N){
 		P_old <- probability_mass(D, i, parents[[i]])
 #		print(paste("P_old:", P_old))
@@ -117,12 +117,21 @@ k2 <- function(order, u, D, print_result = TRUE){
 				break
 			}
 	    }
+		relat_prob <- relat_prob * P_old
     }
+	for (i in 1:N){
+		parents[i] <- lapply(parents[i], function(x) {x[x!=0]})
+	}
 	#Apply order to results
 	ordered_parents <- rep(list(numeric(u)), N)
 	for (i in 1:N){
 		ordered_parents[i] <- lapply(parents[i],
 									 function(x) {return (order[x])})
+	}
+	reverse_order <- inverse(as.word(order))
+	order <- c()
+	for (i in 1:size(reverse_order)){
+		order <- c(order, reverse_order[[i]])
 	}
 	ordered_parents <- ordered_parents[order]
 	#Print parents per node
@@ -134,5 +143,6 @@ k2 <- function(order, u, D, print_result = TRUE){
 			cat("\n")
 		}
 	}
-	return (ordered_parents)
+	result <- list(ordered_parents, relat_prob)
+	return (result)
 }
