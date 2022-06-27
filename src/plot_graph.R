@@ -9,9 +9,8 @@ plot_graph <- function(parents){
             
         }
     }
-    links <- data.frame(source, target)
-    
-    network <- graph_from_data_frame(d=links, directed=T)
+    links <- t(rbind(source, target))
+    network <- graph_from_edgelist(links, directed=TRUE)
     par(bg="black")
     igraph::plot.igraph(network, 
                                 layout=layout.fruchterman.reingold,
