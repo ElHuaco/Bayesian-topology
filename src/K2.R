@@ -1,14 +1,3 @@
-# == all_possible_values ==
-# List of parameters:
-# - nodes: list of nodes
-# - v: possible values each node can take
-# Return Values:
-# - A dataframe with all possible combinations of node values
-all_possible_values <- function(nodes, v) {
-  npar <- rep(list(v), length(nodes))
-  return(expand.grid(npar))
-}
-
 # == Nijk ==
 # List of parameters:
 # - D: dataframe of joint probability distributions measured.
@@ -46,7 +35,7 @@ probability_mass <- function(D, i, parents){
 		return (P1 * P2)
 	}
 	#Parent choice determines what possible values j can take
-	phi <- all_possible_values(parents, v)
+	phi <- as.data.frame(unique(D[,parents]))
 	result <- 1.0
 	#Product over j
 	for (row in 1:nrow(phi)){
@@ -88,12 +77,14 @@ maximize_probability_mass <- function(D, i, parents){
 # - D: dataframe of joint probability distributions measured.
 # Return values:
 # - result: dataframe of parents per node, and structure relative probability.
-k2 <- function(order, u, D, print_result = TRUE){
-	D <- D[, order]
+k2 <- function(D, u, print_result = FALSE, order = NULL){
+	if (is.null(order) == FALSE){
+		D <- D[, order]
+	}
     N <- length(D)
     parents <- rep(list(0), N)
 	relat_prob <- 1.0
-    for(i in 2:N){
+    for (i in 2:N){
 		P_old <- probability_mass(D, i, parents[[i]])
 		parents[i] <- lapply(parents[i], function(x) {x[x!=0]})
 		while (length(parents[[i]]) < u){
@@ -113,26 +104,28 @@ k2 <- function(order, u, D, print_result = TRUE){
 		parents[i] <- lapply(parents[i], function(x) {x[x!=0]})
 	}
 	#Apply order to results
-	ordered_parents <- rep(list(numeric(u)), N)
-	for (i in 1:N){
-		ordered_parents[i] <- lapply(parents[i],
-									 function(x) {return (order[x])})
+	if (is.null(order) == FALSE){
+		ordered_parents <- rep(list(numeric(u)), N)
+		for (i in 1:N){
+			ordered_parents[i] <- lapply(parents[i],
+										 function(x) {return (order[x])})
+		}
+		reverse_order <- inverse(as.word(order))
+		order <- c()
+		for (i in 1:size(reverse_order)){
+			order <- c(order, reverse_order[[i]])
+		}
+		parents <- ordered_parents[order]
 	}
-	reverse_order <- inverse(as.word(order))
-	order <- c()
-	for (i in 1:size(reverse_order)){
-		order <- c(order, reverse_order[[i]])
-	}
-	ordered_parents <- ordered_parents[order]
 	#Print parents per node
 	if (print_result){
 		for (i in 1:N){
 			cat(noquote(paste("Parents of node ", i, ":\t", end=" ")))
-			cat(noquote(paste("", as.character(ordered_parents[[i]]), "",
+			cat(noquote(paste("", as.character(parents[[i]]), "",
 								collapse=", ",sep="")))
 			cat("\n")
 		}
 	}
-	result <- list(ordered_parents, relat_prob)
+	result <- list(parents, relat_prob)
 	return (result)
 }

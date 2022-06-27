@@ -16,7 +16,7 @@ log_probability_mass <- function(D, i, parents){
 		return (P1 + P2)
 	}
 	#Parent choice determines what possible values j can take
-	phi <- all_possible_values(parents, v)
+	phi <- as.data.frame(unique(D[,parents]))
 	result <- 0.0
 	#Product over j
 	for (row in 1:nrow(phi)){
@@ -58,12 +58,14 @@ maximize_log_probability_mass <- function(D, i, parents){
 # - D: dataframe of joint log_probability distributions measured.
 # Return values:
 # - result: list of parents per node, and structure relative log_probability.
-k2_log <- function(order, u, D, print_result = TRUE){
-	D <- D[, order]
+k2_log <- function(D, u, print_result = FALSE, order = NULL){
+	if (is.null(order) == FALSE){
+		D <- D[, order]
+	}
     N <- length(D)
     parents <- rep(list(0), N)
 	relat_log_prob <- 0.0
-    for(i in 2:N){
+    for (i in 2:N){
 		P_old <- log_probability_mass(D, i, parents[[i]])
 		parents[i] <- lapply(parents[i], function(x) {x[x!=0]})
 		while (length(parents[[i]]) < u){
@@ -83,26 +85,28 @@ k2_log <- function(order, u, D, print_result = TRUE){
 		parents[i] <- lapply(parents[i], function(x) {x[x!=0]})
 	}
 	#Apply order to results
-	ordered_parents <- rep(list(numeric(u)), N)
-	for (i in 1:N){
-		ordered_parents[i] <- lapply(parents[i],
-									 function(x) {return (order[x])})
+	if (is.null(order) == FALSE){
+		ordered_parents <- rep(list(numeric(u)), N)
+		for (i in 1:N){
+			ordered_parents[i] <- lapply(parents[i],
+										 function(x) {return (order[x])})
+		}
+		reverse_order <- inverse(as.word(order))
+		order <- c()
+		for (i in 1:size(reverse_order)){
+			order <- c(order, reverse_order[[i]])
+		}
+		parents <- ordered_parents[order]
 	}
-	reverse_order <- inverse(as.word(order))
-	order <- c()
-	for (i in 1:size(reverse_order)){
-		order <- c(order, reverse_order[[i]])
-	}
-	ordered_parents <- ordered_parents[order]
 	#Print parents per node
 	if (print_result){
 		for (i in 1:N){
 			cat(noquote(paste("Parents of node ", i, ":\t", end=" ")))
-			cat(noquote(paste("", as.character(ordered_parents[[i]]), "",
+			cat(noquote(paste("", as.character(parents[[i]]), "",
 								collapse=", ",sep="")))
 			cat("\n")
 		}
 	}
-	result <- list(ordered_parents, relat_log_prob)
+	result <- list(parents, relat_log_prob)
 	return (result)
 }
