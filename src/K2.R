@@ -1,7 +1,10 @@
 # == Nijk ==
 # List of parameters:
 # - D: dataframe of joint probability distributions measured.
-# - parent_choice: list of chosen parent nodes for this particular permutation.
+# - i: index of the node at which we compute.
+# - parent_instantiation: given value of the parent nodes.
+# - parent_choice: list of chosen parent nodes so far.
+# - node_values: list of possible values of the node at which we compute.
 # Return Values:
 # - A list Nijk, over k, as described by F. Cooper and Herskovits on the /docs/
 Nijk <- function(D, i, parent_instantiation, parent_choice, node_values){

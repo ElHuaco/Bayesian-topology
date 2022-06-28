@@ -1,5 +1,5 @@
 # plots the graph for the predicted parents
-plot_graph <- function(parents){
+plot_graph <- function(parents, title = NULL, var_names = NULL){
     source <- c()
     target <- c()
     for(i in 1:length(parents)){
@@ -11,6 +11,8 @@ plot_graph <- function(parents){
     }
     links <- t(rbind(source, target))
     network <- graph_from_edgelist(links, directed=TRUE)
+	if (is.null(var_names) == FALSE) 
+		network <- set_vertex_attr(network, "label", value = var_names)
     par(bg="black")
     igraph::plot.igraph(network, 
                                 layout=layout.fruchterman.reingold,
@@ -26,5 +28,8 @@ plot_graph <- function(parents){
                                 edge.arrow.size=1,
                                 edge.arrow.width=1,
                                 edge.curved=0.2)
-          title("predicted graph of dataset", cex.main=2,col.main="white")
+	if (is.null(title))
+		title("predicted graph of dataset", cex.main=2,col.main="white")
+	else
+		title(title, cex.main=2,col.main="white")
 }
